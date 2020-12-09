@@ -1967,6 +1967,27 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             await ctx.bot.change_presence(activity=None, status=status)
         await ctx.send(_("Done."))
 
+    @_set.command(name="streamyoutube", aliases=["youtube"])
+    @checks.bot_in_a_guild()
+    @checks.is_owner()
+    async def streamyoutube(self, ctx: commands.Context, stream_url=None):
+        """Sets [botname]'s streaming status to a youtube stream.."""
+
+        status = ctx.bot.guilds[0].me.status if len(ctx.bot.guilds) > 0 else None
+
+        if stream_url is not None:
+            if "youtube.com/watch?v=" not in stream_url:
+                stream_url = "https://www.youtube.com/watch?v=" + stream_url
+            if len(stream_url) > 511:
+                await ctx.send("The maximum length of the stream url is 511 characters.")
+                return
+
+            activity = discord.Streaming(url=stream_url, name="Youtube")
+            await ctx.bot.change_presence(status=status, activity=activity)
+        else:
+            await ctx.bot.change_presence(activity=None, status=status)
+        await ctx.send(_("Done."))
+
     @_set.command(name="username", aliases=["name"])
     @checks.is_owner()
     async def _username(self, ctx: commands.Context, *, username: str):
